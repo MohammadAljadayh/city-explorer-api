@@ -1,39 +1,72 @@
 'use strict';
 const express = require("express");
-const server = express();
+const app = express();
 const weatherData = require("./Data/weather.json");
 const axios= require("axios");
 const cors = require("cors");
-server.use(cors());
+app.use(cors());
 require("dotenv").config();
 
-const PORT = process.env.PORT || 3080;
+const PORT = process.env.PORT;
 
 
-server.get("/", root);
-
-server.get("/cityName",city);
-
-server.get("/forcast",wether);
-
-
-function root(req, res) {
+app.get("/",
+function (req, res) {
   res.send("Hello you are in the root , ");
+});
+
+
+class Forecast {
+
+  constructor(date,description){
+
+    this.date=date;
+    this.description=description;
+  }
 }
 
-function city(req, res) {
-  res.send("Hello you are in City Get Part");
-}
+app.get("/weather",(req, res) => {
 
-function wether(req, res){
-  res.send("Hello you are in the forcast Part");
+  console.log("I Am weather");
+  let city_name=req.query.city_name;
+  let lat=req.query.lat;
+  let lon=req.query.lon;
 
-}
+  const returnArray=weatherData.find((item) => {
+return(item.city_name.toLowerCase() === city_name.toLocaleLowerCase());
+  });
+  
+  if (returnArray){
 
- server.get("*", (req, res) => {
+    let newArr=returnArray.data.map((item) => {
+  
+      return new Forecast(item.datetime,item.weather.description);
+    });
+    res.json(newArr);
+  }
+  else {
+  
+    res.json('data not found');
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+app.get("*", (req, res) => {
   res.status(404).send("sorry, this page not found");
 });
 
-server.listen(process.env.PORT || 3080, () => {
+app.listen(PORT,() => {
   console.log(`Listening on PORT ${PORT}`);
 });
