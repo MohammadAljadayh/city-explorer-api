@@ -8,6 +8,8 @@ app.use(cors());
 require("dotenv").config();
 
 const PORT = process.env.PORT;
+const WEATHER_API_KEY=process.env.WEATHER_API_KEY;
+
 
 
 app.get("/",
@@ -25,29 +27,39 @@ class Forecast {
   }
 }
 
-app.get("/weather",(req, res) => {
+app.get("/weather", async (req, res) => {
 
   console.log("I Am weather");
-  let city_name=req.query.city_name;
+  // let city_name=req.query.city_name;
+
   let lat=req.query.lat;
   let lon=req.query.lon;
+  const weatherBitUrl='http://api.weatherbit.io/v2.0/forecast/daily';
 
-  const returnArray=weatherData.find((item) => {
-return(item.city_name.toLowerCase() === city_name.toLocaleLowerCase());
-  });
-  
-  if (returnArray){
+  try {
+    let weatherBitResult = await axios.get(`${weatherBitUrl}?lat=${lat}&lon=${lon}&key=${WEATHER_API_KEY}`);
+    res.json(weatherBitResult.data);
+  } catch (error) {
+    res.json(error.data);
+  }
 
-    let newArr=returnArray.data.map((item) => {
+
+//   const returnArray=weatherData.find((item) => {
+// return(item.city_name.toLowerCase() === city_name.toLocaleLowerCase());
+//   });
   
-      return new Forecast(item.datetime,item.weather.description);
-    });
-    res.json(newArr);
-  }
-  else {
+//   if (returnArray){
+
+//     let newArr=returnArray.data.map((item) => {
   
-    res.json('data not found');
-  }
+//       return new Forecast(item.datetime,item.weather.description);
+//     });
+//     res.json(newArr);
+//   }
+//   else {
+  
+//     res.json('data not found');
+//   }
 });
 
 
