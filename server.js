@@ -10,33 +10,33 @@ require("dotenv").config();
 
 const PORT = process.env.PORT;
 
-
+let arr =[];
 app.get("/",
 function (req, res) {
   res.send("Hello you are in the root , ");
 });
 
 
-class Forecast {
+class Forcast {
 
-  constructor(date,description){
+  constructor(item){
 
-    this.date=date;
-    this.description=description;
+    this.date = item.valid_date;
+    this.description = item.weather.description;
   }
 }
 
-class Movies {
-constructor(title,overview,vote,count)
-{
-this.title=title;
-this.overview=overview;
-this.vote=vote;
-this.count=count;
+// class Movies {
+// constructor(title,overview,vote,count)
+// {
+// this.title=title;
+// this.overview=overview;
+// this.vote=vote;
+// this.count=count;
 
-}
+// }
 
-}
+// }
 // app.get("/weather",(req, res) => {
 
 //   console.log("I Am weather");
@@ -62,69 +62,55 @@ this.count=count;
 //   }
 // });
 
-const WEATHER_API_KEY=process.env.WEATHER_API_KEY;
-app.get('/weather', async (request, response) => {
+app.get('/weather', async (req, res) => {
 
- const city_name=request.query.city_name;
-  const weatherBitUrl = 'https://api.weatherbit.io/v2.0/forecast/daily';
-    const weatherBitResponse = await axios.get(`${weatherBitUrl}?city_name=${city_name}&key=${WEATHER_API_KEY}`);
+  let lat = req.query.lat;
+  let lon = req.query.lon;
+  const WEATHER_API_KEY=process.env.WEATHER_API_KEY;
+  let weatherUrl = `https://api.weatherbit.io/v2.0/forecast/daily?lat=${lat}&lon=${lon}&key=${WEATHER_API_KEY}`
 
-    if (city_name) {
-      let arr1=weatherBitResponse.data.data.map((data1)=> {
-        return new Forecast(
-    `low of ${data1.low_temp}, high of ${data1.high_temp} with ${data1.weather.description}`,`${data1.datetime}`
-    
-        );
-    
-      });
+  axios.get(weatherUrl).then(result =>{
+    console.log(result);
+    const weatherArray = result.data.data.map(item=>{
+    return new Forcast (item);
+    })
+  res.send(weatherArray);
+  })
+  .catch(err =>{
+    res.send(`there is an error in getting the data => ${err}`);
+  })
+  
 
-      if (arr1.length){
-    response.json(arr1);
-      } else {
-        response.send('erorr: Something went wrong');
-      }
-    }else{
-      response.send('erorr: Something went wrong');
+})
+
+app.get('/movies', async (req, res) => {
+
+    let cityName = req.query.cityName;
+    let key = process.env.MOVIE_API_KEY;
+    let url = `https://api.themoviedb.org/3/search/movie?api_key=43fd38f2ebaf3bc016d57a025b1ffd92&query=${cityName}`;
+    // https://api.themoviedb.org/3/search/movie?api_key=43fd38f2ebaf3bc016d57a025b1ffd92&query=amman
+    axios.get(url).then(result =>{
+        const movieArray = result.data.results.map(item=>{
+        return new Movie (item);
+        })
+    res.send(movieArray);
+    })
+    .catch(err =>{
+      res.send(`there is an error in getting the data => ${err}`);
+    })
+  }
+)
+class Movie {
+    constructor(item) {
+        this.original=item.original_title;
+        this.overview=item.overview;
+        this.averageVotes=item.vote_average;
+        this.totalVotes=item.total_votes;
+         this.imagel=`https://image.tmdb.org/t/p/original${item.poster_path}`;
+         this.popularity=item.popularity;
+        this.releasedOn=item.release_date;
     }
-    
-});
-
-
-const MOVIES_API_KEY=process.env.MOVIES_API_KEY;
-
-app.get('./movies',async (req,res)=>{
-
-  const city_name=req.query.query;
-
-  const movie='https://api.themoviedb.org/3/search/movie';
-  const movieResponse=await axios.get(`${movie}?query=${city_name}&api_key=${MOVIES_API_KEY}` );
-
- 
-
-
-
-if (city_name) { 
- 
-let arr1=movieResponsed.data.results.map((data1) => {
-return new Movies (
-`Title: ${data1.title}`,
-`Overview: ${date1.overview}`,
-`Average votes: ${date1.vote_average}`,
-`Total Votes: ${date1.vote_count}`
-);
-});
-
-if(arr1.length){
-  response.json(arr1);
-}else {
-  response.send('erorr somthing went wrong');
-}
-
-}
-else {
-  response.send('erorr somthing went wrong');
-}
-});
+    }
 
 app.get("*", (req, res) => {
   res.status(404).send("sorry, this page not found");
