@@ -18,6 +18,8 @@ const getMovies=require('./controller/movie.controller');
 const index=require('./controller/index.controller');
 
 
+
+
 app.get('/',index);
 
 app.get('/weather',getWeather );
