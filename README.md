@@ -4,37 +4,22 @@ Netlify Link :
 
 
 **Author**: Mohammad Aljadayh 
-**Version**: 1.0.1
+**Version**: 1.0.3
 
-## Overview
+Overview: 
 
-This website allows users to explore any location and display name of it with lat and long  also add wither regarding the location that get it from the server.js 
+craete backend app  restore data 
 
+Getting Started
+create repo and clone it locally install express cors and dotenv
 
-## Getting Started
-- Create server.js App in new project 
-- install needed requrements (express , nodemon )
+Architecture
+express cors dotenv weatherbit.io (weather data as json) heroku
 
-## Architecture
+Change Log
+01-01-2001 4:59pm - Application now has a fully-functional express server, with a GET route for the location resource. -->
 
-using 
-- react 
-- axios
-- API.
-- Bootstrap. 
--Express 
--node.js
-
-
-
-## Credit and Collaborations
-
-[ Axios](https://axios-http.com/docs/api_intro)
-
-[ locationiq](https://locationiq.com/)
-
-[Express Cheat Sheet](https://github.com/LTUC/301-react-cheatsheet/blob/main/content/express.md)
-
+Credit and Collaborations
 
  
 Name of feature: create starter code for react app and connect it with a repo also add url for netlify  
